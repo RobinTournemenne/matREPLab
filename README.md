@@ -3,15 +3,15 @@ matREPLab
 
 This unique python file enhances the classic matlab command window in a terminal application. you just have to launch ```matREPLab.py``` instead of ```matlab -nodesktop```
 
-This is espescially usefull when you want to code in editors different from the matlab native IDE (VS code, Sublime, Atom, emacs...) using the integrated terminals provided by those more advanced editors.
+This is very usefull when you want to code in editors different from the matlab native IDE (VS code, Sublime, Atom, emacs...) using the integrated terminals provided by those more advanced editors.
 
 Quick start
 -----------
 
-make this file Callable using, for example: 
+make this file callable using, for example: 
 
 ```shell
-chmod 777 matREPLab.py; 
+chmod 777 matREPLab.py
 ```
 
 add an alias or add to yout ```PATH``` the matlab binary in your ~/.bashrc or ~/.bash_profile:
@@ -76,7 +76,7 @@ To place breakspoints:
 Limitations:
 ------------
 
-Output is printed when expression evaluation is finished (when the user get back the control). For long commands you can consult the created file ```~/..matREPLab_live_log``` which is written in real time (and also contains the autocompletion calls)
+Output is printed when expression evaluation is finished (when the user get back the control). For long commands you can consult the created file ```~/.matREPLab_live_log``` which is written in real time (and also contains the autocompletion calls)
 
 Planned Enhancements:
 ---------------------
