@@ -1,4 +1,30 @@
 #!/usr/local/bin/python3
+# -*- coding: utf-8 -*-
+
+# MIT License
+
+# Copyright (c) 2020 Robin Tournemenne
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#
+
 from __future__ import unicode_literals
 
 import time
@@ -24,6 +50,13 @@ from prompt_toolkit import print_formatted_text, HTML
 from prompt_toolkit.completion import Completer, Completion, FuzzyCompleter
 
 import pexpect
+
+__author__ = "Robin Tournemenne"
+__credits__ = ["Robin Tournemenne"]
+__license__ = "MIT License"
+__maintainer__ = "Robin Tournemenne"
+__email__ = "rtournem@lavabit.com"
+__status__ = "Dev"
 
 def cleaning(text2Clean):
   text_cleaned = text2Clean.replace('{\x08', '\r\n')
@@ -117,7 +150,7 @@ while(1):
     child.expect('>> $') # the dollar is used for multiline inputs if I record well
   except:
     pass
-  
+
   raw_text = child.before.decode('utf-8')
 
   raw_text = cleaning(raw_text)
