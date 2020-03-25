@@ -113,8 +113,11 @@ while(1):
   if user_input == 'exit':
     break
   time.sleep(0.1)
-  child.expect('>> $') # the dollar is used for multiline inputs if I record well
-
+  try: # for keyboard interrupt
+    child.expect('>> $') # the dollar is used for multiline inputs if I record well
+  except:
+    pass
+  
   raw_text = child.before.decode('utf-8')
 
   raw_text = cleaning(raw_text)
