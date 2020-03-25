@@ -85,7 +85,7 @@ def outputDrawer(output_elements_list):
   
     elif output_elements[1].find('Warning') != -1:
       print_formatted_text(HTML('<ansiyellow>' + output_elements[1] +'</ansiyellow>'))
-    elif output_elements[1].find('Undefined') != -1:
+    elif (output_elements[1].find('Undefined') != -1) | (output_elements[1].find('No appropriate') != -1):
       print_formatted_text(HTML('<ansired>' + output_elements[1] +'</ansired>'))
     elif len(output_elements) > 3:
       tokens_input = list(pygments.lex(output_elements[1], lexer=MatlabLexer()))
@@ -123,15 +123,12 @@ class MatlabCompleter(Completer):
         else:
           completion_propositions = []
         for proposition in completion_propositions:
-          if expression.find('(') != -1: # completion inside a function signature
-            if (word == '(') | (word == '(\'') | (word == ',') | (word == '\',') | (word == '\',\''):
-              yield Completion(proposition['popupCompletion'], start_position=0, display=proposition['popupCompletion'])
-            elif word == '\'':
-              pass
-            else:
-              yield Completion(proposition['popupCompletion'], start_position=-len(word), display=proposition['popupCompletion'])
+          if (word == '(') | (word == '(\'') | (word == ',') | (word == '\',') | (word == '\',\'') | (word == '.'):
+            yield Completion(proposition['popupCompletion'], start_position=0, display=proposition['popupCompletion'])
+          elif word == '\'':
+            pass
           else:
-            yield Completion(proposition['popupCompletion'], start_position=-len(expression))
+            yield Completion(proposition['popupCompletion'], start_position=-len(word), display=proposition['popupCompletion'])
 
 
 child.expect('>>')
@@ -141,7 +138,7 @@ tokens = list(pygments.lex(rawIntro, lexer=MatlabLexer()))
 print_formatted_text(PygmentsTokens(tokens), style=style)
 
 while(1):
-  user_input = session.prompt('>> ', lexer=PygmentsLexer(MatlabLexer), style=style, include_default_pygments_style=False, completer=MatlabCompleter())
+  user_input = session.prompt('>> ', lexer=PygmentsLexer(MatlabLexer), style=style, include_default_pygments_style=False, completer=MatlabCompleter(), complete_while_typing=False)
   child.sendline(user_input)
   if user_input == 'exit':
     break
