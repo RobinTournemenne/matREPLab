@@ -75,7 +75,8 @@ def outputDrawer(output_elements_list):
     elif output_elements[1].find('Error') != -1: # error in the executed function/script
       # vscode formatting
       parsedLineAndCol = output_elements[2].split(' ')
-      output_elements[1]= output_elements[1] + ':' + parsedLineAndCol[1] + ':' + parsedLineAndCol[3] # for precise vscode navigation
+      if len(parsedLineAndCol) > 3:
+        output_elements[1]= output_elements[1] + ':' + parsedLineAndCol[1] + ':' + parsedLineAndCol[3] # for precise vscode navigation
   
       # terminal escape codes (works in zsh)
       # parsedName = outputElements[1].split(' ')
