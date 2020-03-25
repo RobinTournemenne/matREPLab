@@ -14,7 +14,7 @@ make this file callable using, for example:
 chmod 777 matREPLab.py
 ```
 
-add an alias or add to yout ```PATH``` the matlab binary in your ~/.bashrc or ~/.bash_profile:
+add an alias or add to your ```PATH``` the matlab binary in your ~/.bashrc or ~/.bash_profile:
 
 ```
 PATH="/Applications/MATLAB_R2018b.app/bin:$PATH"
@@ -44,9 +44,9 @@ Features
 --------
 - color syntaxing
 - go to errors (line and col) in files (VS code only for the moment)
-- Auto completion (use the created file ```~/.matREPLab_completion_result```)
-- history (use the created file ```~/.matREPLab_history```)
-- multiline handling (a little bit cleaner than matlab -nodesktop)
+- Auto completion (use the file ```~/.matREPLab_completion_result```)
+- history (use the file ```~/.matREPLab_history```)
+- multi-line handling (a little bit cleaner than matlab -nodesktop)
 
 Current validated environments and other equivalent contributions:
 -----------------------------------------------------------------
@@ -60,7 +60,7 @@ To my knowledge only Calysto and imatlab (stange user name) implemented a jupyte
 
 If matREPLab works on your environment, you don't need to install ```MATLAB engine for Python R2016b+``` contrary to these two other contributions, and you don't lose the debugging capabilities (dbstop is still working). 
 
-Usefull not well known Matlab function:
+Usefull not well known Matlab functions:
 ---------------------------------------
 
 To see variables in workspace:
@@ -71,6 +71,11 @@ To see variables in workspace:
 To place breakspoints:
 ```
 >> dbstop in myFile.m at line
+```
+
+To consult pretty documentation:
+```
+>> doc num2str
 ```
 
 Limitations:
@@ -86,4 +91,4 @@ Planned Enhancements:
 - correct path completion
 - common history with Matlab + plus special command for history monitoring
 - real-time outputs
-- integration in VS Code for breakpoints handling (and maybe more advanced stuff debugging navigation and )
+- integration in VS Code for breakpoints handling (and maybe more advanced stuff like debugging navigation and workspace visualization)
