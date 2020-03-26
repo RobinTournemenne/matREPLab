@@ -75,10 +75,10 @@ def cleaning(text2Clean):
 
 def outputDrawer(output_elements_list):
   for output_elements in output_elements_list:
-    if len(output_elements) == 1:
-      continue
     if output_elements[-1] == 'K':
       output_elements = output_elements[:-1]
+    if len(output_elements) == 1:
+      continue
     if output_elements[0].find('error') != -1: # if we called the function error
       print_formatted_text(HTML('<ansired>' + output_elements[1]  +'</ansired>'))
     elif output_elements[1].find('Error') != -1: # error in the executed function/script
