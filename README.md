@@ -89,7 +89,6 @@ Planned Enhancements:
 
 - a settings management to chose themes and options
 - check functionning on Linux and Windows system (via VS code)
-- correct path completion
 - common history with Matlab 
 - special command for history monitoring
 - real-time outputs
