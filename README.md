@@ -52,7 +52,7 @@ Features
 Current validated environments and other equivalent contributions:
 -----------------------------------------------------------------
 
-Should work on any Unix systems (tested on Mac OS X and Ubuntu) for the moment.
+Should work on any Unix system (tested on Mac OS X and Ubuntu).
 
 Working at least for Matlab 2016 to 2019. Does not work on Matlab 2020 because they removed access to the completion function. I may add a more basic solution to get completion results in this case, but it is not a priority.
 
