@@ -136,7 +136,7 @@ class MatlabCompleter(Completer):
         else:
           completion_propositions = []
         for proposition in completion_propositions:
-          if (word == '(') | (word == '(\'') | (word == ',') | (word == '\',') | (word == '\',\'') | (word == '.'):
+          if (word == '(') | (word == '(\'') | (word == ',') | (word == '\',') | (word == '\',\'') | (word == '.') | (word == '/') | (word.find('../') != -1):
             yield Completion(proposition['popupCompletion'], start_position=0, display=proposition['popupCompletion'])
           elif word == '\'':
             pass
