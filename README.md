@@ -14,7 +14,7 @@ make this file callable using, for example:
 chmod 777 matREPLab.py
 ```
 
-add an alias or add to your ```PATH``` the matlab binary in your ~/.bashrc or ~/.bash_profile:
+add an alias or add to your ```PATH``` the matlab binary in your ~/.bashrc or ~/.bash_profile (example for mac OS X):
 
 ```
 PATH="/Applications/MATLAB_R2018b.app/bin:$PATH"
