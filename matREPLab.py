@@ -102,13 +102,9 @@ def outputDrawer(output_elements_list):
       for idx, element in enumerate(output_elements):
         if idx == 0:
           continue
-        tokens_input = list(pygments.lex(output_elements[1], lexer=MatlabLexer())) # maybe needed, maybe not according to case
         if (element.find('Error') != -1) & (idx == 3): # error after user input
+          tokens_input = list(pygments.lex(output_elements[1], lexer=MatlabLexer())) # maybe needed, maybe not according to case
           print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansired>' + new_line.join(output_elements[2:]) +'</ansired>'))
-          done = 1
-          break
-        elif (element.find('Warning') != -1) & (idx == 3): # warning after user input
-          print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansiyellow>' + new_line.join(output_elements[2:]) +'</ansiyellow>'))
           done = 1
           break
         elif (element.find('Error') != -1):
@@ -129,7 +125,7 @@ def outputDrawer(output_elements_list):
           break
         elif (element[:7] == 'Warning') | isWarning:
           if isWarning:
-            if (element[0] == '>') | (element[:4] == '  In'):
+            if element.find('In') != -1:
               print_formatted_text(HTML('<ansiyellow>' + element +'</ansiyellow>'))
             else:
               isWarning = 0
@@ -197,7 +193,7 @@ while(1):
     debug_state = ''
   user_input = session.prompt(debug_state + '>> ', completer=MatlabCompleter(), complete_while_typing=False, complete_in_thread=True) #,  multiline=True, prompt_continuation=prompt_continuation)
   child.sendline(user_input)
-  if user_input == 'exit':
+  if (user_input == 'exit') | (user_input == 'quit'):
     break
   time.sleep(0.1)
   try: # for keyboard interrupt
