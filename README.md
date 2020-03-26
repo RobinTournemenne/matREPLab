@@ -37,9 +37,9 @@ Requirements
 - python 3.6+
 - python packages (installed via ```pip3 install package_name```):
   - pygments
-  - pexpect
+  - pexpect (often already installed)
   - prompt_toolkit
-  - pathlib
+  - pathlib (often already installed)
 
 Features
 --------
@@ -52,8 +52,9 @@ Features
 Current validated environments and other equivalent contributions:
 -----------------------------------------------------------------
 
-Only tested on Mac OS X Mojave for the moment.
-Should work just fine for any Unix OS.
+Should work on any Unix systems (tested on Mac OS X and Ubuntu) for the moment.
+
+Working at least for Matlab 2016 to 2019. Does not work on Matlab 2020 because they removed access to the completion function. I may add a more basic solution to get completion results in this case, but it is not a priority.
 
 To my knowledge only Calysto and imatlab (stange user name) implemented a jupyter kernel to improve matlab REPL in terminals:
 - https://github.com/imatlab/imatlab
