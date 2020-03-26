@@ -94,7 +94,7 @@ Planned Enhancements:
 - real-time outputs
 - integration in VS Code for breakpoints handling (and maybe more advanced stuff like debugging navigation and workspace visualization)
 
-Aknowledgement:
+Aknowledgment:
 ---------------
 
-This work has been possible thanks to the awesome [pexpect](https://github.com/pexpect/pexpect) project, [prompt_toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit) project and [pygment](https://github.com/pygments/pygments) project.
+This work has been possible thanks to the awesome [pexpect](https://github.com/pexpect/pexpect) project, [prompt-toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit) project and [pygments](https://github.com/pygments/pygments) project.
