@@ -65,13 +65,21 @@ try:
 except AssertionError:
   new_line = '\n'
 
-def cleaning(text2Clean):
-  text_cleaned = text2Clean.replace('{\x08', '\r\n')
+def cleaning(text2Clean, user_input):
+  text_cleaned = text2Clean
+  text_cleaned = text_cleaned.replace('{\x08', '')
   text_cleaned = text_cleaned.replace('}\x08', '')
   text_cleaned = text_cleaned.replace('[\x08', '')
   text_cleaned = text_cleaned.replace('\x1b[?1h\x1b=', '')
   text_cleaned = text_cleaned.replace('\x1b[?1h\x1b=\x1b[?1h\x1b=', '')
-  return text_cleaned.replace(']\x08', '')
+  text_cleaned = text_cleaned.replace(']\x08', '')
+    #cases where a newline lacks at the beginning
+  if text_cleaned[len(user_input) : len(user_input) + 4] != '\r\n':
+    if text_cleaned[0] == ' ': # happen for the first prompt...
+      text_cleaned = text_cleaned[:len(user_input) + 1] + '\r\n' + text_cleaned[len(user_input) + 1:]
+    else:
+      text_cleaned = text_cleaned[:len(user_input)] + '\r\n' + text_cleaned[len(user_input):]
+  return text_cleaned
 
 def outputDrawer(output_elements_list):
   for output_elements in output_elements_list:
@@ -79,32 +87,59 @@ def outputDrawer(output_elements_list):
       output_elements = output_elements[:-1]
     if len(output_elements) == 1:
       continue
+
     if output_elements[0].find('error') != -1: # if we called the function error
       print_formatted_text(HTML('<ansired>' + output_elements[1]  +'</ansired>'))
-    elif output_elements[1].find('Error') != -1: # error in the executed function/script
-      # vscode formatting
-      parsedLineAndCol = output_elements[2].split(' ')
-      if len(parsedLineAndCol) > 3:
-        output_elements[1]= output_elements[1] + ':' + parsedLineAndCol[1] + ':' + parsedLineAndCol[3] # for precise vscode navigation
-  
-      # terminal escape codes (works in zsh)
-      # parsedName = outputElements[1].split(' ')
-      # outputElements[1] = parsedName[0] + ' ' + parsedName[1] + "-e ''\e]8;;" + parsedName[2] + '\a' + parsedName[2] + '\e]8;;\a'
-      error2Format = new_line.join(output_elements[1:])
-      print_formatted_text(HTML('<ansired>' + error2Format +'</ansired>'))
-  
     elif output_elements[1].find('Warning') != -1:
       print_formatted_text(HTML('<ansiyellow>' + output_elements[1] +'</ansiyellow>'))
     elif (output_elements[1].find('Undefined') != -1) | (output_elements[1].find('No appropriate') != -1):
       print_formatted_text(HTML('<ansired>' + output_elements[1] +'</ansired>'))
+
     elif len(output_elements) > 3:
-      tokens_input = list(pygments.lex(output_elements[1], lexer=MatlabLexer()))
-      if output_elements[3].find('Error') != -1:
-        print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansired>' + new_line.join(output_elements[2:]) +'</ansired>'))
-      elif output_elements[3].find('Warning') != -1: # I don't know if this occurs sometimes...
-        print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansiyellow>' + new_line.join(output_elements[2:]) +'</ansiyellow>'))
-      else: # classic output (if long print)
-        print_formatted_text(new_line.join(output_elements[1:]))
+      done = 0
+      current_normal_output_idx = 1
+      isWarning =0
+      for idx, element in enumerate(output_elements):
+        if idx == 0:
+          continue
+        tokens_input = list(pygments.lex(output_elements[1], lexer=MatlabLexer())) # maybe needed, maybe not according to case
+        if (element.find('Error') != -1) & (idx == 3): # error after user input
+          print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansired>' + new_line.join(output_elements[2:]) +'</ansired>'))
+          done = 1
+          break
+        elif (element.find('Warning') != -1) & (idx == 3): # warning after user input
+          print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansiyellow>' + new_line.join(output_elements[2:]) +'</ansiyellow>'))
+          done = 1
+          break
+        elif (element.find('Error') != -1):
+          if output_elements[idx + 1][:4] == 'Line':
+            parsedLineAndCol = output_elements[idx + 1].split(' ')
+            idx_path = idx
+          else: #filename too long, Matlba add a line
+            parsedLineAndCol = output_elements[idx + 2].split(' ')
+            idx_path = idx + 1
+          if len(parsedLineAndCol) > 3:
+            output_elements[idx_path]= output_elements[idx_path] + ':' + parsedLineAndCol[1] + ':' + parsedLineAndCol[3] # for precise vscode navigation
+          # terminal escape codes (works in zsh)
+          # parsedName = outputElements[1].split(' ')
+          # outputElements[1] = parsedName[0] + ' ' + parsedName[1] + "-e ''\e]8;;" + parsedName[2] + '\a' + parsedName[2] + '\e]8;;\a'
+          error2Format = new_line.join(output_elements[idx:])
+          print_formatted_text(new_line.join(output_elements[current_normal_output_idx : idx])); print_formatted_text(HTML('<ansired>' + error2Format +'</ansired>'))
+          done = 1
+          break
+        elif (element[:7] == 'Warning') | isWarning:
+          if isWarning:
+            if (element[0] == '>') | (element[:4] == '  In'):
+              print_formatted_text(HTML('<ansiyellow>' + element +'</ansiyellow>'))
+            else:
+              isWarning = 0
+              current_normal_output_idx = idx
+          else:
+            isWarning = 1
+            print_formatted_text(new_line.join(output_elements[current_normal_output_idx : idx]))
+            print_formatted_text(HTML('<ansiyellow>' + element +'</ansiyellow>'))
+      if done == 0: # classic output (if long print)
+        print_formatted_text(new_line.join(output_elements[current_normal_output_idx:]))
     else: #classic output (if short print)
       print_formatted_text(new_line.join(output_elements[1:]))
 
@@ -118,7 +153,7 @@ session = PromptSession(lexer=PygmentsLexer(MatlabLexer),
                         history=ThreadedHistory(FileHistory(home + '/.matREPLab_history')),
                         enable_history_search=True,
                         auto_suggest=AutoSuggestFromHistory())
-child = pexpect.spawn('/bin/bash -c "matlab -nodesktop | tee ~/.matREPLab_live_log"')
+child = pexpect.spawn('/bin/bash -c "matlab -nodesktop 2>&1 | tee ~/.matREPLab_live_log"')
 
 class MatlabCompleter(Completer):
     def get_completions(self, document, complete_event):
@@ -146,7 +181,7 @@ class MatlabCompleter(Completer):
 
 
 child.expect('>>')
-rawIntro = cleaning(child.before.decode('utf-8'))
+rawIntro = cleaning(child.before.decode('utf-8'), 'useless here')
 # the following lexing is not interesting since it is not matlab code to ptompt but it shows directly to the user that the extension works or not
 tokens = list(pygments.lex(rawIntro, lexer=MatlabLexer()))
 print_formatted_text(PygmentsTokens(tokens), style=style)
@@ -171,7 +206,7 @@ while(1):
     pass
   raw_text = child.before.decode('utf-8')
 
-  raw_text = cleaning(raw_text)
+  raw_text = cleaning(raw_text, user_input)
   output_elements2categorize = raw_text.split('\r\n')
   if user_input.find('\n') != -1:
     if user_input.find('\r') != -1:
