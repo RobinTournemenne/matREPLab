@@ -59,6 +59,12 @@ __maintainer__ = "Robin Tournemenne"
 __email__ = "rtournem@lavabit.com"
 __status__ = "Dev"
 
+try:
+  print_formatted_text('\r\n')
+  new_line = '\r\n'
+except AssertionError:
+  new_line = '\n'
+
 def cleaning(text2Clean):
   text_cleaned = text2Clean.replace('{\x08', '\r\n')
   text_cleaned = text_cleaned.replace('}\x08', '')
@@ -82,7 +88,7 @@ def outputDrawer(output_elements_list):
       # terminal escape codes (works in zsh)
       # parsedName = outputElements[1].split(' ')
       # outputElements[1] = parsedName[0] + ' ' + parsedName[1] + "-e ''\e]8;;" + parsedName[2] + '\a' + parsedName[2] + '\e]8;;\a'
-      error2Format = '\r\n'.join(output_elements[1:])
+      error2Format = new_line.join(output_elements[1:])
       print_formatted_text(HTML('<ansired>' + error2Format +'</ansired>'))
   
     elif output_elements[1].find('Warning') != -1:
@@ -92,16 +98,16 @@ def outputDrawer(output_elements_list):
     elif len(output_elements) > 3:
       tokens_input = list(pygments.lex(output_elements[1], lexer=MatlabLexer()))
       if output_elements[3].find('Error') != -1:
-        print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansired>' + '\r\n'.join(output_elements[2:]) +'</ansired>'))
+        print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansired>' + new_line.join(output_elements[2:]) +'</ansired>'))
       elif output_elements[3].find('Warning') != -1: # I don't know if this occurs sometimes...
-        print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansiyellow>' + '\r\n'.join(output_elements[2:]) +'</ansiyellow>'))
+        print_formatted_text(PygmentsTokens(tokens_input[:-1]), style=style); print_formatted_text(HTML('<ansiyellow>' + new_line.join(output_elements[2:]) +'</ansiyellow>'))
       else: # classic output (if long print)
-        print_formatted_text('\r\n'.join(output_elements[1:]))
+        print_formatted_text(new_line.join(output_elements[1:]))
     else: #classic output (if short print)
-      print_formatted_text('\r\n'.join(output_elements[1:]))
+      print_formatted_text(new_line.join(output_elements[1:]))
 
 # styles = ['default','emacs','friendly','colorful','autumn','murphy','manni','monokai','perldoc','pastie','borland','trac','native','fruity','bw','vim','vs','tango','rrt','xcode','igor','paraiso-light','paraiso-dark','lovelace','algol','algol_nu','arduino','rainbow_dash','abap','solarized-dark','solarized-light','sas','stata','stata-light','stata-dark','inkpot']
-style_name = 'solarized-dark'
+style_name = 'monokai'
 style = style_from_pygments_cls(get_style_by_name(style_name))
 
 session = PromptSession(lexer=PygmentsLexer(MatlabLexer),

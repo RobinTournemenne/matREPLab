@@ -39,6 +39,7 @@ Requirements
   - pygments
   - pexpect
   - prompt_toolkit
+  - pathlib
 
 Features
 --------
