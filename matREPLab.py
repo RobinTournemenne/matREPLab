@@ -77,6 +77,8 @@ def outputDrawer(output_elements_list):
   for output_elements in output_elements_list:
     if len(output_elements) == 1:
       continue
+    if output_elements[-1] == 'K':
+      output_elements = output_elements[:-1]
     if output_elements[0].find('error') != -1: # if we called the function error
       print_formatted_text(HTML('<ansired>' + output_elements[1]  +'</ansired>'))
     elif output_elements[1].find('Error') != -1: # error in the executed function/script
@@ -123,7 +125,6 @@ class MatlabCompleter(Completer):
       word = document.get_word_before_cursor()
       expression = document.current_line
       expression_matlabed = expression.replace('\'', '\'\'')
-
       child.sendline('a = com.mathworks.jmi.MatlabMCR().mtGetCompletions(\'' + expression_matlabed + '\',' + str(len(expression)) + '); fid = fopen(\'~/.matREPLab_completion_result\',\'w\'); fprintf(fid, \'%s\',a); fclose(fid);')
       child.expect('>> $')
       with open(home + '/.matREPLab_completion_result') as json_file:
@@ -149,9 +150,17 @@ rawIntro = cleaning(child.before.decode('utf-8'))
 # the following lexing is not interesting since it is not matlab code to ptompt but it shows directly to the user that the extension works or not
 tokens = list(pygments.lex(rawIntro, lexer=MatlabLexer()))
 print_formatted_text(PygmentsTokens(tokens), style=style)
+child.sendline('com.mathworks.services.Prefs.setBooleanPref(\'EditorGraphicalDebugging\',false)') # line to send messages to matlab prior to working
+child.expect('>>')
 
+debug_state = ''
+raw_text = ' '
 while(1):
-  user_input = session.prompt('>> ', completer=MatlabCompleter(), complete_while_typing=False, complete_in_thread=True) #,  multiline=True, prompt_continuation=prompt_continuation)
+  if raw_text[-1] == 'K':
+    debug_state = 'K'
+  else:
+    debug_state = ''
+  user_input = session.prompt(debug_state + '>> ', completer=MatlabCompleter(), complete_while_typing=False, complete_in_thread=True) #,  multiline=True, prompt_continuation=prompt_continuation)
   child.sendline(user_input)
   if user_input == 'exit':
     break
