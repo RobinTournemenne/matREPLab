@@ -151,7 +151,7 @@ tokens = list(pygments.lex(rawIntro, lexer=MatlabLexer()))
 print_formatted_text(PygmentsTokens(tokens), style=style)
 
 while(1):
-  user_input = session.prompt('>> ', completer=MatlabCompleter(), complete_while_typing=False)
+  user_input = session.prompt('>> ', completer=MatlabCompleter(), complete_while_typing=False, complete_in_thread=True) #,  multiline=True, prompt_continuation=prompt_continuation)
   child.sendline(user_input)
   if user_input == 'exit':
     break
