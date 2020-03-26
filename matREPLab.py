@@ -43,7 +43,7 @@ from prompt_toolkit.shortcuts import prompt
 from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles.pygments import style_from_pygments_cls
 from prompt_toolkit import PromptSession
-from prompt_toolkit.history import FileHistory
+from prompt_toolkit.history import FileHistory, ThreadedHistory
 from prompt_toolkit.formatted_text import PygmentsTokens
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
@@ -113,7 +113,7 @@ style = style_from_pygments_cls(get_style_by_name(style_name))
 session = PromptSession(lexer=PygmentsLexer(MatlabLexer),
                         style=style,
                         include_default_pygments_style=False,
-                        history=FileHistory(home + '/.matREPLab_history'),
+                        history=ThreadedHistory(FileHistory(home + '/.matREPLab_history')),
                         enable_history_search=True,
                         auto_suggest=AutoSuggestFromHistory())
 child = pexpect.spawn('/bin/bash -c "matlab -nodesktop | tee ~/.matREPLab_live_log"')
