@@ -89,7 +89,7 @@ Planned Enhancements:
 - a settings management to chose themes and options
 - check functionning on Linux and Windows system (via VS code)
 - correct path completion
-- common history with Matlab + plus special command for history monitoring
-- smarter search history based on the already present characters
+- common history with Matlab 
+- special command for history monitoring
 - real-time outputs
 - integration in VS Code for breakpoints handling (and maybe more advanced stuff like debugging navigation and workspace visualization)

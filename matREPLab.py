@@ -45,6 +45,7 @@ from prompt_toolkit.styles.pygments import style_from_pygments_cls
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.formatted_text import PygmentsTokens
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 from prompt_toolkit import print_formatted_text, HTML
 from prompt_toolkit.completion import Completer, Completion, FuzzyCompleter
@@ -103,7 +104,12 @@ def outputDrawer(output_elements_list):
 style_name = 'solarized-dark'
 style = style_from_pygments_cls(get_style_by_name(style_name))
 
-session = PromptSession(history=FileHistory('/Users/robintournemenne/.matREPLab_history'))
+session = PromptSession(lexer=PygmentsLexer(MatlabLexer),
+                        style=style,
+                        include_default_pygments_style=False,
+                        history=FileHistory(home + '/.matREPLab_history'),
+                        enable_history_search=True,
+                        auto_suggest=AutoSuggestFromHistory())
 child = pexpect.spawn('/bin/bash -c "matlab -nodesktop | tee ~/.matREPLab_live_log"')
 
 class MatlabCompleter(Completer):
@@ -139,7 +145,7 @@ tokens = list(pygments.lex(rawIntro, lexer=MatlabLexer()))
 print_formatted_text(PygmentsTokens(tokens), style=style)
 
 while(1):
-  user_input = session.prompt('>> ', lexer=PygmentsLexer(MatlabLexer), style=style, include_default_pygments_style=False, completer=MatlabCompleter(), complete_while_typing=False)
+  user_input = session.prompt('>> ', completer=MatlabCompleter(), complete_while_typing=False)
   child.sendline(user_input)
   if user_input == 'exit':
     break
@@ -148,7 +154,6 @@ while(1):
     child.expect('>> $') # the dollar is used for multiline inputs if I record well
   except:
     pass
-
   raw_text = child.before.decode('utf-8')
 
   raw_text = cleaning(raw_text)
