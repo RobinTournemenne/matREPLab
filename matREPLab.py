@@ -48,7 +48,7 @@ from prompt_toolkit.formatted_text import PygmentsTokens
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 from prompt_toolkit import print_formatted_text, HTML
-from prompt_toolkit.completion import Completer, Completion, FuzzyCompleter
+from prompt_toolkit.completion import Completer, Completion
 
 import pexpect
 
