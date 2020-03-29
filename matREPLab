@@ -72,7 +72,7 @@ def setSettings(settings2parse):
   elif isinstance(settings2parse, list):
     if len(settings2parse) == 0:
       return stg
-    elif settings2parse[0].find('matREPLab') != -1:
+    elif (settings2parse[0].find('matREPLab') != -1) | (settings2parse[0].find('matreplab') != -1):
       if len(settings2parse) == 1:
         return stg
       else:

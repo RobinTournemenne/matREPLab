@@ -171,6 +171,8 @@ Limitations
 
 Output is printed when expression evaluation is finished (when the user get back the control). For long commands outputing some information, you can consult the created file ```~/.matREPLab_live_log``` which is written in real time (and also contains the autocompletion calls).
 
+You cannot change the auto-suggest from false to true inside matREPLab.
+
 Planned Enhancements
 ====================
 
