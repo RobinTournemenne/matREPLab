@@ -14,6 +14,13 @@ for most people:
 > pip3 install matreplab
 ```
 
+for Mac OS X people, instead of pip you can use brew with the slight advantage of leaving your python site-package virgin of matreplab if it matters to you:
+
+```shell
+> brew tap RobinTournemenne/matreplab  
+> brew install matreplab
+```
+
 Then you need to make the command ```matlab``` executable by creating an alias, or adding it to your path in your ~/.bashrc or ~/.bash_profile (example for mac OS X):
 
 ```
