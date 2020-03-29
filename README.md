@@ -8,13 +8,13 @@ This is very usefull when you want to code in editors different from the matlab 
 Quick start
 -----------
 
-make this file callable using, for example: 
+for most people:
 
 ```shell
-chmod 777 matREPLab.py
+> pip3 install matreplab
 ```
 
-add an alias or add to your ```PATH``` the matlab binary in your ~/.bashrc or ~/.bash_profile (example for mac OS X):
+Then you need to make the command ```matlab``` executable by creating an alias, or adding it to your path in your ~/.bashrc or ~/.bash_profile (example for mac OS X):
 
 ```
 PATH="/Applications/MATLAB_R2018b.app/bin:$PATH"
@@ -22,13 +22,42 @@ PATH="/Applications/MATLAB_R2018b.app/bin:$PATH"
 or
 
 ```
-alias matlab="/Applications/MATLAB_R2018b.app/bin/matlab"
+alias matlab="/Applications/MATLAB_R2019a.app/bin/matlab"
 ```
 
-and execute it!
+and then simply:
 
 ```shell
-matREPLab.py
+> matreplab
+```
+
+Troubleshooting
+---------------
+
+Basically, what pip (python package management system) does is creating a shebang in the script and place it in an executable folder in your PATH. 
+
+If for some reason this ```pip install``` doesn't work, you just have to do that yourself, which is not a hustle: 
+
+1. Clone this repository, or simply download the file ```matREPLab```
+
+2. make this file executable using, for example:
+
+```shell
+> chmod +x matREPLab
+```
+
+3. install the 4 dependencies manually via ```pip3 install package_name``` (Cf. Requirements)
+
+4. execute it!
+
+```shell
+> matREPLab.py
+```
+
+if it is still not working, maybe the shebang doesn't work and you will have to force the usage of ```python3```:
+
+```shell
+> python3 matREPLab
 ```
 
 Requirements
@@ -44,17 +73,17 @@ Requirements
 Features
 --------
 - color syntaxing
-- go to errors (line and col) in files (VS code only for the moment)
 - Auto completion (use the file ```~/.matREPLab_completion_result```)
+- go to errors (line and col) in files (VS code only for the moment)
 - history (use the file ```~/.matREPLab_history```)
 - multi-line handling (a little bit cleaner than matlab -nodesktop)
 
 Current validated environments and other equivalent contributions:
 -----------------------------------------------------------------
 
-Should work on any Unix system (tested on Mac OS X and Ubuntu).
+Should work on any Unix system (tested on Mac OS X Mojave and Ubuntu 18.04).
 
-Working at least for Matlab 2016 to 2019. Does not work on Matlab 2020 because they removed access to the completion function. I may add a more basic solution to get completion results in this case, but it is not a priority.
+Working at least for Matlab 2016 to 2019. Does not work on Matlab 2020 because they removed access to the auto-completion function. I may add a more basic solution to get completion results in this case, but it is not a priority.
 
 To my knowledge only Calysto and imatlab (stange user name) implemented a jupyter kernel to improve matlab REPL in terminals:
 - https://github.com/imatlab/imatlab
@@ -80,16 +109,21 @@ To consult pretty documentation:
 >> doc num2str
 ```
 
+To consult the actual Matlab history (not the one of matREPLab):
+```
+>> commandhistory
+```
+
 Limitations:
 ------------
 
-Output is printed when expression evaluation is finished (when the user get back the control). For long commands you can consult the created file ```~/.matREPLab_live_log``` which is written in real time (and also contains the autocompletion calls)
+Output is printed when expression evaluation is finished (when the user get back the control). For long commands outputing some information, you can consult the created file ```~/.matREPLab_live_log``` which is written in real time (and also contains the autocompletion calls).
 
 Planned Enhancements:
 ---------------------
 
 - a settings management to chose themes and options
-- check functionning on Linux and Windows system (via VS code)
+- check functionning on Windows system (via VS code)
 - common history with Matlab 
 - special command for history monitoring
 - real-time outputs
