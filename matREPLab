@@ -27,16 +27,20 @@
 
 from __future__ import unicode_literals
 
+import sys
+
 import time
 
 from pathlib import Path
 home = str(Path.home())
 
+from os import path
+
 import json
 
 import pygments
 from pygments.lexers.matlab import MatlabLexer
-from pygments.styles import get_style_by_name
+from pygments.styles import get_style_by_name, get_all_styles
 from pygments.token import Token
 
 from prompt_toolkit.shortcuts import prompt
@@ -52,12 +56,82 @@ from prompt_toolkit.completion import Completer, Completion
 
 import pexpect
 
-__author__ = "Robin Tournemenne"
-__credits__ = ["Robin Tournemenne"]
-__license__ = "MIT License"
-__maintainer__ = "Robin Tournemenne"
-__email__ = "rtournem@lavabit.com"
-__status__ = "Dev"
+def setSettings(settings2parse):
+  stg = {}
+  if settings2parse == 'default': # then we will get the dault values
+    stg["settings_filename"] = home + '/.matREPLab_settings.json'
+    stg["history_filename"] = home + '/.matREPLab_history'
+    stg["completion_filename"] = home + '/.matREPLab_completion_result'
+    stg["log_filename"] = home + '/.matREPLab_live_log'
+    stg["history_search"] = True
+    stg["auto_suggest"] = AutoSuggestFromHistory()
+    stg["complete_while_typing"] = False
+    stg["complete_in_threads"] = True
+    stg["theme"] = 'monokai'
+    return stg
+  elif isinstance(settings2parse, list):
+    if len(settings2parse) == 0:
+      return stg
+    elif settings2parse[0].find('matREPLab') != -1:
+      if len(settings2parse) == 1:
+        return stg
+      else:
+        settings2parse = settings2parse[1:]
+  else:
+    raise ValueError("input to setSettings unreadable: shoud be a list (can be empty) or 'default'")
+
+  for setting in settings2parse:
+    if setting.find('-settings_filename') != -1:
+      idx = setting.find('=')
+      stg["settings_filename"] = setting[idx + 1:]
+    elif setting.find('-history_filename') != -1:
+      idx = setting.find('=')
+      stg["history_filename"] = setting[idx + 1:]
+    elif setting.find('-completion_filename') != -1:
+      idx = setting.find('=')
+      stg["completion_filename"] = setting[idx + 1:]
+    elif setting.find('-log_filename') != -1:
+      idx = setting.find('=')
+      stg["log_filename"]  = setting[idx + 1:]
+    elif setting.find('-theme') != -1:
+      idx = setting.find('=')
+      stg["theme"] = setting[idx + 1:]
+    elif setting.find('-disable_history_search') != -1:
+      stg["history_search"] = False
+    elif setting.find('-disable_auto_suggest') != -1:
+      stg["auto_suggest"] = None
+    elif setting.find('-complete_while_typing') != -1:
+      stg["complete_while_typing"] = True
+    elif setting.find('-disable_complete_in_threads') != -1:
+      stg["complete_in_threads"] = False
+    else:
+      raise ValueError("the setting: '" + setting + "' does not exist.")
+  return stg
+
+settings = setSettings('default') # default settings
+if path.exists(settings["settings_filename"]):
+  with open(settings["settings_filename"]) as json_settings: # modified by the classic settings file
+    tmp_settings = json.load(json_settings)
+    if tmp_settings["auto_suggest"] == False:
+      tmp_settings["auto_suggest"] = None
+    else:
+      tmp_settings["auto_suggest"] = AutoSuggestFromHistory()
+    settings.update(tmp_settings)
+settings_arguments = setSettings(sys.argv)
+if "settings_filename" in settings_arguments.keys():
+  if settings["settings_filename"] != settings_arguments["settings_filename"]: # modified by a specific settings file if existing
+    if path.exists(settings_arguments["settings_filename"]):
+      with open(settings_arguments["settings_filename"]) as json_settings: 
+        tmp_settings = json.load(json_settings)
+        if tmp_settings["auto_suggest"] == False:
+          tmp_settings["auto_suggest"] = None
+        else:
+          tmp_settings["auto_suggest"] = AutoSuggestFromHistory()
+        settings.update(tmp_settings)
+    else:
+      raise ValueError("the file you want to load doesn't seem to exist")
+settings.update(settings_arguments) # modified by argv
+style = style_from_pygments_cls(get_style_by_name(settings["theme"]))
 
 try:
   print_formatted_text('\r\n')
@@ -139,17 +213,7 @@ def outputDrawer(output_elements_list):
     else: #classic output (if short print)
       print_formatted_text(new_line.join(output_elements[1:]))
 
-# styles = ['default','emacs','friendly','colorful','autumn','murphy','manni','monokai','perldoc','pastie','borland','trac','native','fruity','bw','vim','vs','tango','rrt','xcode','igor','paraiso-light','paraiso-dark','lovelace','algol','algol_nu','arduino','rainbow_dash','abap','solarized-dark','solarized-light','sas','stata','stata-light','stata-dark','inkpot']
-style_name = 'monokai'
-style = style_from_pygments_cls(get_style_by_name(style_name))
-
-session = PromptSession(lexer=PygmentsLexer(MatlabLexer),
-                        style=style,
-                        include_default_pygments_style=False,
-                        history=ThreadedHistory(FileHistory(home + '/.matREPLab_history')),
-                        enable_history_search=True,
-                        auto_suggest=AutoSuggestFromHistory())
-child = pexpect.spawn('/bin/bash -c "matlab -nodesktop 2>&1 | tee ~/.matREPLab_live_log"')
+child = pexpect.spawn('/bin/bash -c "matlab -nodesktop 2>&1 | tee ' + settings["log_filename"] +'"')
 
 class MatlabCompleter(Completer):
     def get_completions(self, document, complete_event):
@@ -158,7 +222,7 @@ class MatlabCompleter(Completer):
       expression_matlabed = expression.replace('\'', '\'\'')
       child.sendline('a = com.mathworks.jmi.MatlabMCR().mtGetCompletions(\'' + expression_matlabed + '\',' + str(len(expression)) + '); fid = fopen(\'~/.matREPLab_completion_result\',\'w\'); fprintf(fid, \'%s\',a); fclose(fid);')
       child.expect('>> $')
-      with open(home + '/.matREPLab_completion_result') as json_file:
+      with open(settings["completion_filename"]) as json_file:
         matlab_completion_output = json.load(json_file)
       if 'cannotComplete' in matlab_completion_output:
         pass
@@ -177,12 +241,22 @@ class MatlabCompleter(Completer):
 
 
 child.expect('>>')
-rawIntro = cleaning(child.before.decode('utf-8'), 'useless here')
+rawIntro = cleaning(child.before.decode('utf-8'), 'this setting is useless here')
 # the following lexing is not interesting since it is not matlab code to ptompt but it shows directly to the user that the extension works or not
 tokens = list(pygments.lex(rawIntro, lexer=MatlabLexer()))
 print_formatted_text(PygmentsTokens(tokens), style=style)
 child.sendline('com.mathworks.services.Prefs.setBooleanPref(\'EditorGraphicalDebugging\',false)') # line to send messages to matlab prior to working
 child.expect('>>')
+
+session = PromptSession(lexer=PygmentsLexer(MatlabLexer),
+                        style=style,
+                        include_default_pygments_style=False,
+                        history=ThreadedHistory(FileHistory(settings["history_filename"])),
+                        enable_history_search=settings["history_search"],
+                        auto_suggest=settings["auto_suggest"],
+                        completer=MatlabCompleter(),
+                        complete_while_typing=settings["complete_while_typing"],
+                        complete_in_thread=settings["complete_in_threads"])
 
 debug_state = ''
 raw_text = ' '
@@ -191,8 +265,38 @@ while(1):
     debug_state = 'K'
   else:
     debug_state = ''
-  user_input = session.prompt(debug_state + '>> ', completer=MatlabCompleter(), complete_while_typing=False, complete_in_thread=True) #,  multiline=True, prompt_continuation=prompt_continuation)
-  child.sendline(user_input)
+
+  user_input = session.prompt(debug_state + '>> ')
+
+  #special functions
+  if user_input.find('%setSettings') != -1:
+    new_settings = user_input.replace('%setSettings', '')
+    new_settings = new_settings.replace(';', '')
+    settings.update(json.loads(new_settings))
+    style = style_from_pygments_cls(get_style_by_name(settings["theme"]))
+    session = PromptSession(lexer=PygmentsLexer(MatlabLexer),
+                            style=style,
+                            include_default_pygments_style=False,
+                            history=ThreadedHistory(FileHistory(settings["history_filename"])),
+                            enable_history_search=settings["history_search"],
+                            auto_suggest=settings["auto_suggest"],
+                            completer=MatlabCompleter(),
+                            complete_while_typing=settings["complete_while_typing"],
+                            complete_in_thread=settings["complete_in_threads"])
+    continue
+  elif user_input.find('%saveSettings') != -1:
+    with open(settings["settings_filename"], 'w') as json_file:
+      if settings["auto_suggest"] == None:
+        settings["auto_suggest"] = False
+      else:
+        settings["auto_suggest"] = True
+      json.dump(settings, json_file)
+    continue
+  elif user_input.find('%getAvailableThemes') != -1:
+    print(list(get_all_styles()))
+    continue
+  else:
+    child.sendline(user_input)
   if (user_input == 'exit') | (user_input == 'quit'):
     break
   time.sleep(0.1)
