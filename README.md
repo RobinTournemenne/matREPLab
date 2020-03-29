@@ -1,7 +1,7 @@
 matREPLab
 ---------
 
-This unique python file enhances the classic matlab command window in a terminal application. you just have to launch ```matREPLab.py``` instead of ```matlab -nodesktop```
+This unique python file enhances the classic matlab command window in a terminal application. you just have to launch ```matreplab``` instead of ```matlab -nodesktop```
 
 This is very usefull when you want to code in editors different from the matlab native IDE (VS code, Sublime, Atom, emacs...) using the integrated terminals provided by those more advanced editors.
 
@@ -40,7 +40,7 @@ If for some reason this ```pip install``` doesn't work, you just have to do that
 
 1. Clone this repository, or simply download the file ```matREPLab```
 
-2. make this file executable using, for example:
+2. cd in the cloned folder and make this file executable using, for example:
 
 ```shell
 > chmod +x matREPLab
@@ -51,7 +51,7 @@ If for some reason this ```pip install``` doesn't work, you just have to do that
 4. execute it!
 
 ```shell
-> matREPLab.py
+> matREPLab
 ```
 
 if it is still not working, maybe the shebang doesn't work and you will have to force the usage of ```python3```:
