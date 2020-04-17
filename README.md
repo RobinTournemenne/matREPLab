@@ -1,7 +1,7 @@
 matREPLab
 =========
 
-This unique python file enhances the classic matlab command window in a terminal application. you just have to launch ```matreplab``` instead of ```matlab -nodesktop```
+This unique python file enhances the classic matlab command window in a terminal application. you just have to launch ```matreplab``` instead of ```matlab -nodesktop```. This can also be used for people using the ```-nojvm``` flag (see the settings section).
 
 This is very usefull when you want to code in editors different from the matlab native IDE (VS code, Sublime, Atom, emacs...) using the integrated terminals provided by those more advanced editors.
 
@@ -90,6 +90,7 @@ magic functions and settings
 Startup
 -------
 One can tune matREPLab at launch with the following flags:
+- ```-matlab_flags``` (change the flags called by maltab, replacing for example -nodesktop by -nojvm)
 - ```-theme```
 - ```-disable_auto_suggest```
 - ```-complete_while_typing```
@@ -102,6 +103,10 @@ One can tune matREPLab at launch with the following flags:
 
 examples:
 ```shell
+> matreplab -matlab_flags="-nojvm -nosplash"
+```
+
+```shell
 > matreplab -theme="stata-dark" -disable_auto_suggest
 ```
 
@@ -112,6 +117,7 @@ examples:
 Some functions has been added specifically to try options directly inside the REPL (they are called magic functions):
 
 - ```%setSettings``` to change settings parameters writting directly a json array as a string. Here are the possible couples Name/Values:
+  - ```matlab_flags```: string
   - ```theme```: string
   - ```history_search```: true/false
   - ```auto_suggest```: true/false
@@ -176,11 +182,13 @@ You cannot change the auto-suggest from false to true inside matREPLab.
 Planned Enhancements
 ====================
 
-- adding magic functions to completer (word completer should do)
+- real-time outputs +making input possible
+- keyboard interrupt, interrupts also matlab code
+- validator for settings file! to avoid useless keys in json
 - check functionning on Windows system (via VS code)
 - common history with Matlab 
 - special command for history monitoring
-- real-time outputs
+- shared matlab session magic function
 - integration in VS Code for breakpoints handling (and maybe more advanced stuff like debugging navigation and workspace visualization)
 
 Aknowledgment

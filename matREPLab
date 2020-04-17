@@ -63,6 +63,7 @@ def setSettings(settings2parse):
     stg["history_filename"] = home + '/.matREPLab_history'
     stg["completion_filename"] = home + '/.matREPLab_completion_result'
     stg["log_filename"] = home + '/.matREPLab_live_log'
+    stg["matlab_flags"] = '-nodesktop'
     stg["history_search"] = True
     stg["auto_suggest"] = AutoSuggestFromHistory()
     stg["complete_while_typing"] = False
@@ -96,6 +97,9 @@ def setSettings(settings2parse):
     elif setting.find('-theme') != -1:
       idx = setting.find('=')
       stg["theme"] = setting[idx + 1:]
+    elif setting.find('-matlab_flags') != -1:
+      idx = setting.find('=')
+      stg["matlab_flags"] = setting[idx + 1:]
     elif setting.find('-disable_history_search') != -1:
       stg["history_search"] = False
     elif setting.find('-disable_auto_suggest') != -1:
@@ -213,7 +217,7 @@ def outputDrawer(output_elements_list):
     else: #classic output (if short print)
       print_formatted_text(new_line.join(output_elements[1:]))
 
-child = pexpect.spawn('/bin/bash -c "matlab -nodesktop 2>&1 | tee ' + settings["log_filename"] +'"')
+child = pexpect.spawn('/bin/bash -c "matlab ' + settings["matlab_flags"] + ' 2>&1 | tee ' + settings["log_filename"] +'"')
 
 class MatlabCompleter(Completer):
     def get_completions(self, document, complete_event):
@@ -245,8 +249,9 @@ rawIntro = cleaning(child.before.decode('utf-8'), 'this setting is useless here'
 # the following lexing is not interesting since it is not matlab code to ptompt but it shows directly to the user that the extension works or not
 tokens = list(pygments.lex(rawIntro, lexer=MatlabLexer()))
 print_formatted_text(PygmentsTokens(tokens), style=style)
-child.sendline('com.mathworks.services.Prefs.setBooleanPref(\'EditorGraphicalDebugging\',false)') # line to send messages to matlab prior to working
-child.expect('>>')
+if settings["matlab_flags"].find('nojvm') == -1:
+  child.sendline('com.mathworks.services.Prefs.setBooleanPref(\'EditorGraphicalDebugging\',false)') # line to send messages to matlab prior to working
+  child.expect('>>')
 
 session = PromptSession(lexer=PygmentsLexer(MatlabLexer),
                         style=style,

@@ -1,3 +1,5 @@
 /HomebrewFormula
 __pycache__
 .vscode
+*.code-workspace
+.gitignore
